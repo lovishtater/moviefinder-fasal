@@ -12,18 +12,20 @@ const Appbar = () => {
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
             {user ? (
-                <>
-            <Nav.Link href="/">Home</Nav.Link>
-            <Nav.Link href={`/wishlist/${user.uid}`}>WatchList</Nav.Link>
-            <Nav.Link 
-            onClick={() => {
-                localStorage.removeItem("user");
-                localStorage.removeItem("favorites");
-            }} href="/">Logout</Nav.Link>
-        
-                </>
+              <>
+                <Nav.Link href="/">Home</Nav.Link>
+                <Nav.Link href={`/wishlist/${user.uid}`}>Wishlist</Nav.Link>
+                <Nav.Link
+                  onClick={() => {
+                    localStorage.removeItem("user");
+                    localStorage.removeItem("favorites");
+                  }}
+                  href="/">
+                  Logout
+                </Nav.Link>
+              </>
             ) : (
-            <Nav.Link href="/login">Login</Nav.Link>
+              <Nav.Link href="/login">Login</Nav.Link>
             )}
           </Nav>
         </Navbar.Collapse>

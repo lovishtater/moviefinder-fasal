@@ -5,16 +5,19 @@ import MovieCard from '../components/MovieCard'
 
 const Home = () => {
   const [movies, setMovies] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
   const favorites = JSON.parse(localStorage.getItem("favorites")) || [];
   const user = JSON.parse(localStorage.getItem("user"));
   const url = new URL("https://www.omdbapi.com/?i=tt3896198&apikey=abf6a51e");
   const fetchMovies = async (query) => {
+    setLoading(true);
     if (query) {
       url.searchParams.set("s", query);
     }
     const response = await fetch(url).then((res) => res.json());
     setMovies(response.Search);
+    setLoading(false);
   };
 
   
@@ -45,17 +48,18 @@ const Home = () => {
       </Container>
       <div className="movies">
         <Container>
-          {query ? (
+          {!loading ? (
             <Row>
               {movies ? (
                 movies.map((movie) => {
                   const isFavorite = favorites.find((fav) => fav.imdbID === movie.imdbID);
                   console.log(isFavorite);
                   return (
-                    <Col xs={12} sm={6} md={4} lg={3} key={movie.imdbID} className="my-3">
+                    <Col xs={12} sm={6} md={4} lg={3} key={movie.imdbID} className="m-2">
                       <MovieCard movie={movie} isFavorite={isFavorite} canEdit={`${true}`} />
                     </Col>
-                  );})
+                  );
+                })
               ) : (
                 <h1>No movies found</h1>
               )}
@@ -69,7 +73,7 @@ const Home = () => {
                 height="200"
                 width="200"
               />
-              <h1>Search for a movie</h1>
+              <h1>Searching...</h1>
             </div>
           )}
         </Container>

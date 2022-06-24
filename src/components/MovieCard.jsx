@@ -41,7 +41,7 @@ const MovieCard = ({ movie, isFavorite, canEdit }) => {
             onClick={() => {
               handleFavorite(imdbID);
             }}>
-            {isFav ? "Remove from Watchlist" : "Add to Watchlist"}
+            {isFav ? "Remove from Wishlist" : "Add to Wishlist"}
           </Button>
         )}
       </Card.Body>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Form, Alert } from "react-bootstrap";
+import { Form, Alert, Spinner } from "react-bootstrap";
 import { Button } from "react-bootstrap";
 import { app } from "../firebase";
 import firebase from "firebase/compat/app";
@@ -10,6 +10,7 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isError, setError] = useState("");
+  const [isLoading, setLoading] = useState(false);
   const navigate = useNavigate();
 
 
@@ -18,12 +19,16 @@ const Login = () => {
     if (!email || !password) {
       setError("Please enter all fields");
     }
+    setLoading(true);
     await app.auth().signInWithEmailAndPassword(email, password).then((user) => {
       localStorage.setItem("user", JSON.stringify(user.user));
       navigate("/");
     }).catch((error) => {
       setError(error.message);
-    });
+    }).finally(() => {
+      setLoading(false);
+    }
+    );
   };
 
 
@@ -51,7 +56,11 @@ const Login = () => {
 
           <div className="d-grid gap-2">
             <Button variant="primary" type="Submit">
-              Log In
+              {isLoading ? (
+                <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+              ) : (
+                "Login"
+              )}
             </Button>
           </div>
         </Form>

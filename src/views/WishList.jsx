@@ -13,13 +13,17 @@ const WishList = () => {
   const {id} = useParams();
   const [movies, setMovies] = useState([]);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
   const user = JSON.parse(localStorage.getItem("user"));
   const favorites = async () => {
+    setLoading(true);
     try {
     const response = await db.collection("users").doc(id).collection("favorites").get();
     setMovies(response.docs.map((doc) => doc.data()));
     } catch (error) {
       setError(error.message);
+    } finally {
+      setLoading(false);
     }
   }
   useEffect(() => {
@@ -30,19 +34,35 @@ const WishList = () => {
     <div>
       <Navbar />
       <Container className="my-5">
-        <h1 className="text-center">Wish List</h1>
-        <Row>
-            {movies.map((movie) => {
+        <h1 className="text-center">Wish List of {user.providerData[0].displayName}</h1>
+        {error && <p className="text-center text-danger">{error}</p>}
+        {!loading ? (
+          <Row>
+            {movies.length > 0 ? movies.map((movie) => {
               return (
                 <Col xs={12} sm={6} md={4} lg={3}>
                   <MovieCard movie={movie} key={movie.imdbID} isFavorite={true} canEdit={canEdit} />
                 </Col>
-              )}
+              );
+            }) : (
+              <p className="text-center">No favorites yet</p>
             )}
-        </Row>
+          </Row>
+        ) : (
+          <div className="text-center">
+            <img
+              src="https://cdn0.iconfinder.com/data/icons/movie-and-video-2/512/search-video-files-movie-searching-512.png"
+              alt="search"
+              className="img-fluid"
+              height="200"
+              width="200"
+            />
+            <h1>Searching...</h1>
+          </div>
+        )}
       </Container>
     </div>
-  )
+  );
 }
 
 export default WishList
