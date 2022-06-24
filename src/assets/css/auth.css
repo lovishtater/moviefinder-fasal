@@ -1,0 +1,14 @@
+.box {
+  border: 1px solid #dfdfdf;
+  background-color: #fff;
+}
+
+.auth {
+  background-color: #fafafa;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  width: 100%;
+  align-items: center;
+  height: 100vh;
+}
