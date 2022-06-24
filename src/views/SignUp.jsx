@@ -30,7 +30,7 @@ const Signup = () => {
   return (
     <div className="auth">
       <div className="p-4 box">
-        <h2 className="mb-3">Movie Finder Signup</h2>
+        <h2 className="mb-3">Movie Mania Signup</h2>
         {isError && <Alert variant="danger">{isError}</Alert>}
         <Form
           onSubmit={(e) => {
@@ -58,9 +58,11 @@ const Signup = () => {
             </Button>
           </div>
         </Form>
-      </div>
-      <div className="p-4 box mt-3 text-center">
+        <hr />
+      <div>
         Already have an account? <Link to="/">Log In</Link>
+          
+      </div>
       </div>
     </div>
   );

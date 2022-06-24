@@ -30,7 +30,7 @@ const Login = () => {
   return (
     <div className="auth">
       <div className="p-4 box">
-        <h2 className="mb-3">Find Movie</h2>
+        <h2 className="mb-3">Movie Mania</h2>
         {isError && <Alert variant="danger">{isError}</Alert>}
         <Form onSubmit={(e) => handleSubmit(e)}>
           <Form.Group className="mb-3" controlId="formBasicEmail">
