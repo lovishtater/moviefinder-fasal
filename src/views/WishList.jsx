@@ -1,6 +1,11 @@
 import React , { useEffect, useState} from 'react'
 import Navbar from "../components/Navbar";
-import { Form, InputGroup, FormControl, Container, Row, Col } from "react-bootstrap";
+import {
+  Container,
+  Row,
+  Col,
+  ListGroup,
+} from "react-bootstrap";
 import MovieCard from "../components/MovieCard";
 import { useParams } from 'react-router-dom';
 import { app, db } from "../firebase";
@@ -10,56 +15,150 @@ import "firebase/compat/database";
 import "firebase/compat/firestore";
 
 const WishList = () => {
-  const {id} = useParams();
+  const { id } = useParams();
+  const [wishList, setWishList] = useState([]);
+  const [allWishList, setAllWishList] = useState([]);
   const [movies, setMovies] = useState([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
-  const user = JSON.parse(localStorage.getItem("user"));
-  const favorites = async () => {
+  const user = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : null;
+
+  const getWishList = async () => {
     setLoading(true);
     try {
-    const response = await db.collection("users").doc(id).collection("favorites").get();
-    setMovies(response.docs.map((doc) => doc.data()));
+      const res = await db.collection("users").doc(id).collection("lists").get();
+      setWishList(res.docs.map((doc) => doc.data()));
     } catch (error) {
       setError(error.message);
     } finally {
       setLoading(false);
     }
-  }
+  };
+
+  const getWishListData = async () => {
+    setLoading(true);
+    try {
+      const res = await db.collection("users").doc(id).collection("favorites").get();
+      setAllWishList(res.docs.map((doc) => doc.data()));
+      return res.docs.map((doc) => doc.data());
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getMovies = async (id) => {
+    setLoading(true);
+    console.log(id, "id");
+    console.log(allWishList, "allWishList");
+    const movie = allWishList.filter((movie) => movie.wishListId == id);
+    console.log(movie, "movie");
+    setMovies(movie);
+    setLoading(false);
+  };
+  console.log(movies, "movies");
+  // remove
+  const handleDelete = async (id, wLId) => {
+    try {
+      await db
+        .collection("users")
+        .doc(user.uid)
+        .collection("favorites")
+        .doc(id)
+        .delete()
+        .then(() => {
+          console.log("Document successfully deleted!");
+        });
+        await getWishListData().then((allWishList) => {
+          setMovies(allWishList.filter((movie) => movie.wishListId == wLId));
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
-    favorites();
-  }, [])
-  const canEdit = user && user.uid === id;
+    getWishList();
+    getWishListData();
+  }, []);
+  const canEdit = user != null && user?.uid === id;
   return (
     <div>
       <Navbar />
       <Container className="my-5">
-        <h1 className="text-center">Wish List of {user.providerData[0].displayName}</h1>
-        {error && <p className="text-center text-danger">{error}</p>}
-        {!loading ? (
-          <Row>
-            {movies.length > 0 ? movies.map((movie) => {
-              return (
-                <Col xs={12} sm={6} md={4} lg={3}>
-                  <MovieCard movie={movie} key={movie.imdbID} isFavorite={true} canEdit={canEdit} />
-                </Col>
-              );
-            }) : (
-              <p className="text-center">No favorites yet</p>
+        <Row>{error && <p>{error}</p>}</Row>
+        <Row>
+          <Col md={12} lg={3}>
+            <h1>Wishlist</h1>
+            <ListGroup as="ol" numbered>
+              {canEdit &&
+                wishList.map((wish, index) => (
+                  <ListGroup.Item
+                    // as="li"
+                    className="d-flex justify-content-between align-items-start"
+                    onClick={() => {
+                      getMovies(wish.id);
+                    }}>
+                    <div className="ms-2 me-auto">{wish.title}</div>
+
+                    {wish?.isPrivate && (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        fill="red"
+                        class="bi bi-lock-fill"
+                        viewBox="0 0 16 16">
+                        <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z" />
+                      </svg>
+                    )}
+                    {/* <Badge bg="primary" pill>
+                      {wish.length}
+                    </Badge> */}
+                  </ListGroup.Item>
+                ))}
+            </ListGroup>
+          </Col>
+          <Col md={12} lg={9}>
+            <h1 className="text-center">Wish List of {user?.providerData[0].displayName}</h1>
+            {error && <p className="text-center text-danger">{error}</p>}
+            {!loading ? (
+              <Row>
+                {movies.length > 0 ? (
+                  movies.map((movie, index) => {
+                    return (
+                      <Col key={index} xs={12} sm={6} md={4} lg={4}>
+                        {canEdit && (
+                          <MovieCard
+                            movie={movie}
+                            isFavorite={true}
+                            canEdit={canEdit}
+                            path="wishList"
+                            handleDelete={handleDelete}
+                          />
+                        )}
+                      </Col>
+                    );
+                  })
+                ) : (
+                  <p className="text-center">No favorites yet</p>
+                )}
+              </Row>
+            ) : (
+              <div className="text-center">
+                <img
+                  src="https://cdn0.iconfinder.com/data/icons/movie-and-video-2/512/search-video-files-movie-searching-512.png"
+                  alt="search"
+                  className="img-fluid"
+                  height="200"
+                  width="200"
+                />
+                <h1>Searching...</h1>
+              </div>
             )}
-          </Row>
-        ) : (
-          <div className="text-center">
-            <img
-              src="https://cdn0.iconfinder.com/data/icons/movie-and-video-2/512/search-video-files-movie-searching-512.png"
-              alt="search"
-              className="img-fluid"
-              height="200"
-              width="200"
-            />
-            <h1>Searching...</h1>
-          </div>
-        )}
+          </Col>
+        </Row>
       </Container>
     </div>
   );

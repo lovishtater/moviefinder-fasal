@@ -14,6 +14,7 @@ const Appbar = () => {
             {user ? (
               <>
                 <Nav.Link href="/">Home</Nav.Link>
+                <Nav.Link href="/wishlist/create">Create WishList</Nav.Link>
                 <Nav.Link href={`/wishlist/${user.uid}`}>Wishlist</Nav.Link>
                 <Nav.Link
                   onClick={() => {

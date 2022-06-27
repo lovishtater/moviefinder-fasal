@@ -2,7 +2,6 @@ import firebase from "firebase/compat/app";
 import "firebase/compat/firestore";
 import "firebase/compat/auth";
 
-console.log(process.env)
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
   authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
@@ -13,7 +12,6 @@ databaseURL: process.env.REACT_APP_FIREBASE_DATABASE_URL,
   appId: process.env.REACT_APP_FIREBASE_APP_ID,
   measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
 };
-console.log(firebaseConfig);
 
 // Initialize Firebase
 export const app = firebase.initializeApp(firebaseConfig);

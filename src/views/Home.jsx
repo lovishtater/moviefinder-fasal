@@ -1,13 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { Form, InputGroup, FormControl , Container, Row, Col } from "react-bootstrap";
+import { Form, InputGroup, FormControl , Container, Row, Col, Modal} from "react-bootstrap";
 import Navbar from '../components/Navbar'
 import MovieCard from '../components/MovieCard'
+import { app, db } from "../firebase";
+import firebase from "firebase/compat/app";
+import "firebase/compat/firestore";
 
 const Home = () => {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [wishList, setWishList] = useState([]);
+  const [error, setError] = useState("");
   const [query, setQuery] = useState("");
-  const favorites = JSON.parse(localStorage.getItem("favorites")) || [];
   const user = JSON.parse(localStorage.getItem("user"));
   const url = new URL("https://www.omdbapi.com/?i=tt3896198&apikey=abf6a51e");
   const fetchMovies = async (query) => {
@@ -20,6 +24,22 @@ const Home = () => {
     setLoading(false);
   };
 
+    const getWishList = async () => {
+      setLoading(true);
+      try {
+        const res = await db.collection("users").doc(user.uid).collection("lists").get();
+        setWishList(res.docs.map((doc) => doc.data()));
+        console.log(wishList, "wishList");
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    useEffect(() => {
+      getWishList();
+    }, []);
   
   
     
@@ -27,6 +47,7 @@ const Home = () => {
     <div>
       <Navbar />
       <h1 className="text-center">Welcome to Movie Mania</h1>
+      {error && <p className="text-center">{error}</p>}
       <Container className="my-5">
         <Form.Label htmlFor="inlineFormInputGroupUsername" visuallyHidden>
           Username
@@ -51,12 +72,15 @@ const Home = () => {
           {!loading ? (
             <Row>
               {movies ? (
-                movies.map((movie) => {
-                  const isFavorite = favorites.find((fav) => fav.imdbID === movie.imdbID);
-                  console.log(isFavorite);
+                movies.map((movie, index) => {
                   return (
-                    <Col xs={12} sm={6} md={4} lg={3} key={movie.imdbID} className="m-2">
-                      <MovieCard movie={movie} isFavorite={isFavorite} canEdit={`${true}`} />
+                    <Col xs={12} sm={6} md={4} lg={3} key={index} className="m-2">
+                      <MovieCard
+                        movie={movie}
+                        wishList={wishList}
+                        canEdit={`${true}`}
+                        path="home"
+                      />
                     </Col>
                   );
                 })
