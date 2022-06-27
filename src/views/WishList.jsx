@@ -28,6 +28,7 @@ const WishList = () => {
     try {
       const res = await db.collection("users").doc(id).collection("lists").get();
       setWishList(res.docs.map((doc) => doc.data()));
+      console.log(wishList, "wishList");
     } catch (error) {
       setError(error.message);
     } finally {
@@ -40,6 +41,7 @@ const WishList = () => {
     try {
       const res = await db.collection("users").doc(id).collection("favorites").get();
       setAllWishList(res.docs.map((doc) => doc.data()));
+      console.log(allWishList, "allWishList");
       return res.docs.map((doc) => doc.data());
     } catch (error) {
       setError(error.message);
@@ -50,10 +52,7 @@ const WishList = () => {
 
   const getMovies = async (id) => {
     setLoading(true);
-    console.log(id, "id");
-    console.log(allWishList, "allWishList");
     const movie = allWishList.filter((movie) => movie.wishListId == id);
-    console.log(movie, "movie");
     setMovies(movie);
     setLoading(false);
   };
@@ -92,10 +91,9 @@ const WishList = () => {
           <Col md={12} lg={3}>
             <h1>Wishlist</h1>
             <ListGroup as="ol" numbered>
-              {canEdit &&
-                wishList.map((wish, index) => (
+               {wishList.map((wish, index) => (
+                  canEdit ? (
                   <ListGroup.Item
-                    // as="li"
                     className="d-flex justify-content-between align-items-start"
                     onClick={() => {
                       getMovies(wish.id);
@@ -103,21 +101,22 @@ const WishList = () => {
                     <div className="ms-2 me-auto">{wish.title}</div>
 
                     {wish?.isPrivate && (
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        fill="red"
-                        class="bi bi-lock-fill"
-                        viewBox="0 0 16 16">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-lock-fill" viewBox="0 0 16 16">
                         <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z" />
                       </svg>
                     )}
-                    {/* <Badge bg="primary" pill>
-                      {wish.length}
-                    </Badge> */}
                   </ListGroup.Item>
-                ))}
+                ) : (
+                  !wish?.isPrivate && (
+                  <ListGroup.Item
+                    className="d-flex justify-content-between align-items-start"
+                    onClick={() => {
+                      getMovies(wish.id);
+                    }}>
+                    <div className="ms-2 me-auto">{wish.title}</div>
+                  </ListGroup.Item> 
+                )
+                )))}
             </ListGroup>
           </Col>
           <Col md={12} lg={9}>
@@ -127,9 +126,9 @@ const WishList = () => {
               <Row>
                 {movies.length > 0 ? (
                   movies.map((movie, index) => {
+                    
                     return (
                       <Col key={index} xs={12} sm={6} md={4} lg={4}>
-                        {canEdit && (
                           <MovieCard
                             movie={movie}
                             isFavorite={true}
@@ -137,7 +136,7 @@ const WishList = () => {
                             path="wishList"
                             handleDelete={handleDelete}
                           />
-                        )}
+                        
                       </Col>
                     );
                   })
