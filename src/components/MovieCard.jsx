@@ -24,7 +24,6 @@ const MovieCard = ({ movie, canEdit, wishList, path, handleDelete }) => {
       movie.wishListId = wLId;
       movie.isPrivate = wishListRef?.isPrivate;
       movie.wishListTitle = wishListRef.title;
-      console.log(movie, "movie");
       await db.collection("users").doc(user.uid).collection("favorites").doc(movie.id).set(movie);
     } catch (error) {
       console.log(error);

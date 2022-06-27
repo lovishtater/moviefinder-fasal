@@ -29,7 +29,6 @@ const Home = () => {
       try {
         const res = await db.collection("users").doc(user.uid).collection("lists").get();
         setWishList(res.docs.map((doc) => doc.data()));
-        console.log(wishList, "wishList");
       } catch (error) {
         setError(error.message);
       } finally {
@@ -40,8 +39,20 @@ const Home = () => {
     useEffect(() => {
       getWishList();
     }, []);
+
+    const debounce = (func, wait = 1000) => {
+      let timeout;
+      return (...value) => {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+          func(value);
+        }, wait);
+      };
+    };
   
-  
+  const handleSearch = debounce((value) => {
+    fetchMovies(value);
+  }, 1000);
     
   return (
     <div>
@@ -55,16 +66,9 @@ const Home = () => {
         <InputGroup>
           <FormControl
             id="inlineFormInputGroupUsername"
-            onChange={(e) => setQuery(e.target.value)}
-            value={query}
-            placeholder="Username"
+            onChange={(e) => handleSearch(e.target.value)}
+            placeholder="Search for a movie"
           />
-          <InputGroup.Text
-            onClick={() => {
-              fetchMovies(query);
-            }}>
-            Search
-          </InputGroup.Text>
         </InputGroup>
       </Container>
       <div className="movies">

@@ -28,7 +28,6 @@ const WishList = () => {
     try {
       const res = await db.collection("users").doc(id).collection("lists").get();
       setWishList(res.docs.map((doc) => doc.data()));
-      console.log(wishList, "wishList");
     } catch (error) {
       setError(error.message);
     } finally {
@@ -41,7 +40,6 @@ const WishList = () => {
     try {
       const res = await db.collection("users").doc(id).collection("favorites").get();
       setAllWishList(res.docs.map((doc) => doc.data()));
-      console.log(allWishList, "allWishList");
       return res.docs.map((doc) => doc.data());
     } catch (error) {
       setError(error.message);
@@ -56,7 +54,7 @@ const WishList = () => {
     setMovies(movie);
     setLoading(false);
   };
-  console.log(movies, "movies");
+  
   // remove
   const handleDelete = async (id, wLId) => {
     try {
