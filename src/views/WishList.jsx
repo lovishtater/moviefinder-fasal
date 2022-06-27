@@ -54,7 +54,7 @@ const WishList = () => {
     setMovies(movie);
     setLoading(false);
   };
-  
+
   // remove
   const handleDelete = async (id, wLId) => {
     try {
@@ -118,7 +118,7 @@ const WishList = () => {
             </ListGroup>
           </Col>
           <Col md={12} lg={9}>
-            <h1 className="text-center">Wish List of {user?.providerData[0].displayName}</h1>
+            <h1 className="text-center my-2">Wish List</h1>
             {error && <p className="text-center text-danger">{error}</p>}
             {!loading ? (
               <Row>
@@ -126,7 +126,7 @@ const WishList = () => {
                   movies.map((movie, index) => {
                     
                     return (
-                      <Col key={index} xs={12} sm={6} md={4} lg={4}>
+                      <Col key={index} xs={12} sm={6} md={4} lg={4} className="my-2 align-items-center d-flex justify-content-center">
                           <MovieCard
                             movie={movie}
                             isFavorite={true}
@@ -139,13 +139,13 @@ const WishList = () => {
                     );
                   })
                 ) : (
-                  <p className="text-center">No favorites yet</p>
+                  <p className="text-center">No favorites yet, Please select different wishlist</p>
                 )}
               </Row>
             ) : (
               <div className="text-center">
                 <img
-                  src="https://cdn0.iconfinder.com/data/icons/movie-and-video-2/512/search-video-files-movie-searching-512.png"
+                  src={require("../assets/img/noresult.png")}
                   alt="search"
                   className="img-fluid"
                   height="200"

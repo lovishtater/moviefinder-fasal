@@ -3,7 +3,6 @@ import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import { app, db } from "../firebase";
 import firebase from "firebase/compat/app";
-import "firebase/compat/auth";
 import "firebase/compat/database";
 import "firebase/compat/firestore";
 import { Modal, Form, Spinner } from 'react-bootstrap';
