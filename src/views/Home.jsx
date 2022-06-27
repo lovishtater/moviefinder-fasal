@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Form, InputGroup, FormControl , Container, Row, Col, Modal} from "react-bootstrap";
+import { Form, InputGroup, FormControl , Container, Row, Col} from "react-bootstrap";
 import Navbar from '../components/Navbar'
 import MovieCard from '../components/MovieCard'
 import { app, db } from "../firebase";
@@ -11,7 +11,6 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [wishList, setWishList] = useState([]);
   const [error, setError] = useState("");
-  const [query, setQuery] = useState("");
   const user = JSON.parse(localStorage.getItem("user"));
   const url = new URL("https://www.omdbapi.com/?i=tt3896198&apikey=abf6a51e");
   const fetchMovies = async (query) => {
@@ -60,9 +59,6 @@ const Home = () => {
       <h1 className="text-center">Welcome to Movie Mania</h1>
       {error && <p className="text-center">{error}</p>}
       <Container className="my-5">
-        <Form.Label htmlFor="inlineFormInputGroupUsername" visuallyHidden>
-          Username
-        </Form.Label>
         <InputGroup>
           <FormControl
             id="inlineFormInputGroupUsername"
@@ -78,7 +74,7 @@ const Home = () => {
               {movies ? (
                 movies.map((movie, index) => {
                   return (
-                    <Col xs={12} sm={6} md={4} lg={3} key={index} className="m-2">
+                    <Col xs={12} sm={6} md={4} lg={3} key={index} className="my-2 align-items-center d-flex justify-content-center">
                       <MovieCard
                         movie={movie}
                         wishList={wishList}
@@ -95,7 +91,7 @@ const Home = () => {
           ) : (
             <div className="text-center">
               <img
-                src="https://cdn0.iconfinder.com/data/icons/movie-and-video-2/512/search-video-files-movie-searching-512.png"
+                src={require("../assets/img/noresult.png")}
                 alt="search"
                 className="img-fluid"
                 height="200"
